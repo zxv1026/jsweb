@@ -1,0 +1,85 @@
+extends ../layout
+
+append css
+    link(rel='stylesheet', href='/css/backstage/nav.css')
+append js
+    script(src='/js/backstage/nav.js')
+
+block main
+    .nav
+      .nav-top
+        #mini(style='border-bottom:1px solid rgba(255,255,255,.1)')
+          img(src='images/mini.png')
+      ul
+        li.nav-item
+          a(href='javascript:;')
+            i.my-icon.nav-icon.icon_1
+            span 网站配置
+            i.my-icon.nav-more
+          ul
+            li
+              a(href='javascript:;')
+                span 网站设置
+            li
+              a(href='javascript:;')
+                span 友情链接
+            li
+              a(href='javascript:;')
+                span 分类管理
+            li
+              a(href='javascript:;')
+                span 系统日志
+        li.nav-item
+          a(href='javascript:;')
+            i.my-icon.nav-icon.icon_2
+            span 文章管理
+            i.my-icon.nav-more
+          ul
+            li
+              a(href='javascript:;')
+                span 站内新闻
+            li
+              a(href='javascript:;')
+                span 站内公告
+            li
+              a(href='javascript:;')
+                span 登录日志
+        li.nav-item
+          a(href='javascript:;')
+            i.my-icon.nav-icon.icon_3
+            span 订单管理
+            i.my-icon.nav-more
+          ul
+            li
+              a(href='javascript:;')
+                span 订单列表
+            li
+              a(href='javascript:;')
+                span 打个酱油
+            li
+              a(href='javascript:;')
+                span 也打酱油
+    header#header
+      nav.navbar.navbar-inverse.navbar-fixed-top
+        .container-fluid
+          .navbar-header
+            button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+              span.sr-only Toggle navigation
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+            a.navbar-brand(href='#') Project name
+          #navbar.navbar-collapse.collapse
+            ul.nav.navbar-nav.navbar-right
+              li
+                a(href='#') Dashboard
+              li
+                a(href='#') Settings
+              li
+                a(href='#') Profile
+              li
+                a(href='#') Help
+            form.navbar-form.navbar-right
+              input.form-control(type='text', placeholder='Search...')
+    
+        block content
