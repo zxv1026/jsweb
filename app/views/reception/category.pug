@@ -1,6 +1,10 @@
 extends layout
 
-block content 
+block content
+    h2.page-header
+        =category.name
+        |分类下的所有文章&nbsp;
+        =posts.length
     each post in posts
         .post
         h3.post-title

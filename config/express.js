@@ -4,10 +4,14 @@ const glob = require('glob');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const moment = require('moment');
+const truncate = require('truncate');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const compress = require('compression');
 const methodOverride = require('method-override');
+const mongoose = require('mongoose');
+
+var Category = mongoose.model('Category');
 
 module.exports = (app, config) => {
   const env = process.env.NODE_ENV || 'development';
@@ -20,8 +24,15 @@ module.exports = (app, config) => {
   app.use(function (req,res,next) {
     app.locals.pageName=req.path;
     app.locals.moment = moment;
-    next();
-  })
+    app.locals.truncate = truncate;
+    Category.find(function (err, categories) {
+      if(err){
+        return next(err);
+      }
+      app.locals.categories = categories;
+      next();
+    });
+  });
 
   // app.use(favicon(config.root + '/public/img/favicon.ico'));
   app.use(logger('dev'));
