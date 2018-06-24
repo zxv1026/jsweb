@@ -10,7 +10,7 @@ block content
         h3.post-title
             a(href="/posts/view/"+post._id,target="_blank")
                 =post.title
-        .posts-abstract
+        .post-abstract
                 =truncate(post.content,200)
         .post-meta
             span.post-created 
