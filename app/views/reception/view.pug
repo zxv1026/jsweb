@@ -22,7 +22,7 @@ block content
                     i.fa.fa-star &nbsp;
                     = post.meta.favorite || 0
         .post-content
-                = post.content
+                != post.content
         .post-comments
             h3 用户评论
             != messages()

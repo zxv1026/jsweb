@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const slug = require('slug');
+const pinyin = require('pinyin');
 const mongoose = require('mongoose');
 const Post = mongoose.model('Post');
 const User = mongoose.model('User');
@@ -73,7 +75,58 @@ router.get('/add', (req, res, next) => {
     });
 });
 router.post('/add', (req, res, next) => {
+    req.checkBody('title','文章标题不能为空').notEmpty();
+    req.checkBody('category', '必须有文章分类').notEmpty();
+    req.checkBody('content', '文章内容不能为空').notEmpty();
 
+    var errors = req.validationErrors();
+    if(errors){
+        console.log(errors);
+        return res.render('backstage/post/add',{
+            errors: errors,
+            title: req.body.title,
+            content: req.body.content,
+        });
+    }
+
+    var title = req.body.title.trim();
+    var category = req.body.category.trim();
+    var content = req.body.content;
+    User.findOne({}, function (err, author) {
+        if(err){
+            return next(err);
+        }
+
+        var py = pinyin(title, {
+            style: pinyin.STYLE_NORMAL,
+            heteronym: false
+        }).map(function (item) {
+            return item[0];
+        }).join(' ');
+        console.log(py);
+
+        var post = new Post({
+            title: title,
+            slug: slug(py),
+            category: category,
+            content: content,
+            author: author,
+            published: true,
+            meta: { favorite: 0},
+            comments: [],
+            created: new Date(),
+        });
+        post.save(function(err, post){
+            if(err){
+                console.log('post/add error',err);
+                req.flash('error','文章保存失败');
+                res.redirect('/backstage/posts/add');
+            }else{
+                req.flash('info', '文章保存成功');
+                res.redirect('/backstage/posts');
+            }
+        });
+    });
 });
 router.get('/edit/:id', (req, res, next) => {
     

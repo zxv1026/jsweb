@@ -10,7 +10,7 @@ module.exports = (app) => {
 
 router.get('/', (req, res, next) => {
     Post.find({ published: true})
-    .sort('created')
+    .sort('-created')
     .populate('author')
     .populate('category')
     .exec((err, posts) => {
