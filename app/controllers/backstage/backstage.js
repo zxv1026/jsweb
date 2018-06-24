@@ -8,11 +8,5 @@ module.exports = (app) => {
 };
 
 router.get('/', (req, res, next) => {
-  Post.find((err, posts) => {
-    if (err) return next(err);
-    res.render('backstage/index', {
-      title: 'blog backstage',
-      posts: posts
-    });
-  });
+  res.redirect('/backstage/posts')
 });

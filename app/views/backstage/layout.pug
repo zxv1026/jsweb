@@ -6,6 +6,7 @@ append css
     link(rel='stylesheet', href='/css/backstage/material-design.css')
     link(rel='stylesheet', href='/css/backstage/roboto.css')
     link(rel='stylesheet', href='/components/font-awesome/css/font-awesome.css')
+    link(rel='stylesheet', href='/css/backstage/backstage.css')
 append js
     script(src='/js/backstage/normalize.js')
     script(src='/js/backstage/jquery.cookie.min.js')
@@ -21,17 +22,17 @@ block main
         #cm-menu-items-wrapper
           #cm-menu-scroller
             ul.cm-menu-items
-              li.active
+              li(class={active: pageName === "/backstage"})
                 a.sf-house(href='/backstage') 主页
-              li
-                a.sf-ac(href='/backstage/posts/list') 文章列表
-              li
+              li(class={active: pageName === "/backstage/posts"})
+                a.sf-ac(href='/backstage/posts') 文章列表
+              li(class={active: pageName === "/backstage/posts/add"})
                 a.sf-ad(href='/backstage/posts/add') 添加文章
-              li
-                a.sf-cl(href='/backstage/categories/list') 分类列表
-              li
+              li(class={active: pageName === "/backstage/categories"})
+                a.sf-cl(href='/backstage/categories') 分类列表
+              li(class={active: pageName === "/backstage/categories/add"})
                 a.sf-addtc(href='/backstage/categories/add') 添加分类
-              li
+              li(class={active: pageName === "/backstage/users/password"})
                 a.sf-lock-open(href='/backstage/users/password') 修改密码
     header#cm-header
       nav.cm-navbar.cm-navbar-primary
@@ -61,7 +62,4 @@ block main
               a(href='/bcakstage/users/logout')
                 i.fa.fa-fw.fa-sign-out
                 |  &nbsp;Sign out
-    footer.cm-footer
-        span.pull-left jsweb
-        span.pull-right © 2018
-        block content
+    block content
