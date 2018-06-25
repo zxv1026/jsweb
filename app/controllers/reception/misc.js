@@ -9,12 +9,12 @@ router.get('/', (req, res, next) => {
     res.redirect('/posts')
 });
 router.get('/about', (req, res, next) => {
-    res.render('reception/index', {
+    res.render('reception/about', {
         title: 'About me',
     });
 });
 router.get('/contact', (req, res, next) => {
-    res.render('reception/index', {
+    res.render('reception/contact', {
         title: 'Contact me',
     });
 });

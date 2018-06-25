@@ -45,21 +45,22 @@ block main
           #cm-search-btn.btn.btn-primary.md-search-white(data-toggle='cm-search')
         .dropdown.pull-right
           button.btn.btn-primary.md-account-circle-white(data-toggle='dropdown')
-          ul.dropdown-menu
-            li.disabled.text-center
-              a(style='cursor:default;')
-                strong V
-            li.divider
-            li
-              a(href='#')
-                i.fa.fa-fw.fa-user
-                |  Profile
-            li
-              a(href='#')
-                i.fa.fa-fw.fa-cog
-                |  Settings
-            li
-              a(href='/bcakstage/users/logout')
-                i.fa.fa-fw.fa-sign-out
-                |  &nbsp;Sign out
+          if user
+            ul.dropdown-menu
+              li.disabled.text-center
+                a(style='cursor:default;')= user.email
+                  strong
+              li.divider
+              li
+                a(href='#')
+                  i.fa.fa-fw.fa-user
+                  |  Profile
+              li
+                a(href='#')
+                  i.fa.fa-fw.fa-cog
+                  |  Settings
+              li
+                a(href='/backstage/users/logout')
+                  i.fa.fa-fw.fa-sign-out
+                  |  &nbsp;Sign out
     block content

@@ -9,7 +9,13 @@ module.exports = (app) => {
 };
 
 router.get('/', (req, res, next) => {
-    Post.find({ published: true})
+    // condition
+    var conditions = { published: true};
+    if (req.query.keyword) {
+        conditions.title = new RegExp(req.query.keyword.trim(), 'i');
+        conditions.content = new RegExp(req.query.keyword.trim(), 'i');
+    }
+    Post.find(conditions)
     .sort('-created')
     .populate('author')
     .populate('category')
@@ -36,7 +42,7 @@ router.get('/category/:name', (req, res, next) => {
             return next(err);
         }
         Post.find({ category: category,published: true })
-        .sort('created')
+        .sort('-created')
         .populate('author')
         .populate('category')
         .exec(function (err, posts) {

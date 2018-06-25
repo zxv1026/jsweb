@@ -3,6 +3,7 @@ const router = express.Router();
 const slug = require('slug');
 const pinyin = require('pinyin');
 const mongoose = require('mongoose');
+const auth = require('./user');
 const Post = mongoose.model('Post');
 const User = mongoose.model('User');
 const Category = mongoose.model('Category');
@@ -11,7 +12,7 @@ module.exports = (app) => {
     app.use('/backstage/posts', router);
 };
 
-router.get('/', (req, res, next) => {
+router.get('/', auth.requireLogin,(req, res, next) => {
     //sort
     var sortby = req.query.sortby ? req.query.sortby : 'created';
     var sortdir = req.query.sortdir ? req.query.sortdir : 'desc';
@@ -33,8 +34,8 @@ router.get('/', (req, res, next) => {
         conditions.author = req.query.author.trim();
     }
     if (req.query.keyword) {
-        conditions.title = new RegExp(req.query.keyword.trim(), 'v');
-        conditions.content = new RegExp(req.query.keyword.trim(), 'v');
+        conditions.title = new RegExp(req.query.keyword.trim(), 'i');
+        conditions.content = new RegExp(req.query.keyword.trim(), 'i');
     }
     User.find({}, function name(err, authors) {
         if (err) return next(err);
@@ -69,12 +70,16 @@ router.get('/', (req, res, next) => {
     });
     
 });
-router.get('/add', (req, res, next) => {
+router.get('/add', auth.requireLogin, (req, res, next) => {
     res.render('backstage/post/add', {
+        action: "/backstage/posts/add",
         pretty: true,
+        post:{
+            category: { _id: '' },
+        },
     });
 });
-router.post('/add', (req, res, next) => {
+router.post('/add', auth.requireLogin,(req, res, next) => {
     req.checkBody('title','文章标题不能为空').notEmpty();
     req.checkBody('category', '必须有文章分类').notEmpty();
     req.checkBody('content', '文章内容不能为空').notEmpty();
@@ -128,13 +133,65 @@ router.post('/add', (req, res, next) => {
         });
     });
 });
-router.get('/edit/:id', (req, res, next) => {
-    
+router.get('/edit/:id', auth.requireLogin, (req, res, next) => {
+    if (!req.params.id) {
+        return next(new Error('no post id provided'));
+    }
+
+    Post.findOne({ _id: req.params.id })
+        .populate('category')
+        .populate('author')
+        .exec(function (err, post) {
+            if (err) {
+                return next(err);
+            }
+            res.render('backstage/post/add', {
+                action: "/backstage/posts/edit/" + post._id,
+                post: post,
+            });
+            
+        });
 });
-router.post('/edit/:id', (req, res, next) => {
-    
+router.post('/edit/:id', auth.requireLogin,(req, res, next) => {
+    if(!req.params.id){
+        return next(new Error('no post id provided'));
+    }
+    Post.findOne({ _id: req.params.id})
+    .populate('category')
+    .populate('author')
+    .exec(function(err,post){
+        if (err) {
+            return next(err);
+        }
+
+        var title = req.body.title.trim();
+        var category = req.body.category.trim();
+        var content = req.body.content;
+
+        var py = pinyin(title, {
+            style: pinyin.STYLE_NORMAL,
+            heteronym: false
+        }).map(function (item) {
+            return item[0];
+        }).join(' ');
+
+        post.title = title;
+        post.category = category;
+        post.content = content;
+        post.slug = slug(py);
+        post.save(function (err, post) {
+            if (err) {
+                console.log('post/edit error', err);
+                req.flash('error', '文章编辑失败');
+                res.redirect('/backstage/posts/edit/' + post._id);
+            } else {
+                req.flash('info', '文章编辑成功');
+                res.redirect('/backstage/posts');
+            }
+        });
+    });
 });
-router.get('/delete/:id', (req, res, next) => {
+router.get('/delete/:id', auth.requireLogin,(req, res, next) => {
    if(!req.params.id){
        return next(new Error('no poat id provided'));
    }

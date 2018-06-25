@@ -10,15 +10,17 @@ const bodyParser = require('body-parser');
 const compress = require('compression');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
+const passport = require('passport');
 const validator = require('express-validator');
 
 var session = require('express-session');
 var flash = require('connect-flash');
 var messages = require('express-messages');
-
+var MongoStore = require('connect-mongo')(session);
 var Category = mongoose.model('Category');
+var User = mongoose.model('User');
 
-module.exports = (app, config) => {
+module.exports = (app, config,connection) => {
   const env = process.env.NODE_ENV || 'development';
   app.locals.ENV = env;
   app.locals.ENV_DEVELOPMENT = env == 'development';
@@ -30,7 +32,7 @@ module.exports = (app, config) => {
     app.locals.pageName=req.path;
     app.locals.moment = moment;
     app.locals.truncate = truncate;
-    Category.find(function (err, categories) {
+    Category.find({}).sort('-created').exec(function (err, categories) {
       if(err){
         return next(err);
       }
@@ -67,11 +69,33 @@ module.exports = (app, config) => {
     secret: 'jsweb',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false}
+    cookie: { secure: false},
+    store: new MongoStore({ mongooseConnection: connection })
   }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.use(function (req, res, next) {
+    req.user = null;
+    if (req.session.passport && req.session.passport.user) {
+      User.findById(req.session.passport.user, function (err, user) {
+        if (err) return next(err);
+
+        user.password = null;
+        req.user = user;
+
+        next();
+      })
+    } else {
+      next();
+    }
+  });
+
   app.use(flash());
   app.use(function (req, res ,next) {
     res.locals.messages = messages(req,res);
+    app.locals.user = req.user;
+    console.log(req.session, app.locals.user);
     next();
   });
   app.use(compress());

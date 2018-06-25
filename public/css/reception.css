@@ -3,7 +3,18 @@ body{
     color: #555;
 }
 /*nav*/
+/* .navbar-fixed-container {
+    background-color: #373277;
+    height: 50px
+} */
 
+.navbar {
+    font-size: 16px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0
+}
 /*blog posts*/
 .post{
   margin-bottom: 40px;
